@@ -1,0 +1,34 @@
+name: Code Quality Check
+
+# Scaffold template: source event triggers and cron schedules removed; run manually via workflow_dispatch.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install black ruff
+
+      - name: Run Black
+        run: black --check --verbose .
+
+      - name: Run Ruff
+        run: ruff check .
+
+      - name: Run Ruff Format Check
+        run: ruff format --check .
