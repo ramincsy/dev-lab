@@ -1,0 +1,75 @@
+# Gthub Achievements
+
+راهنمای فارسی همکاری در GitHub و پیگیری فعالیت‌های واقعی پروژه. نام مخزن با املای `Gthub` ثبت شده و عمداً تغییر داده نمی‌شود.
+
+مجوز: [MIT](LICENSE). گزارش امنیتی: [SECURITY.md](SECURITY.md).
+
+## اعضا
+
+- مالک: [ramincsy](https://github.com/ramincsy)
+- همکار: [backrebital-lgtm](https://github.com/backrebital-lgtm)
+
+دو حساب یک مالک دارند. درخواست بررسی بین آن‌ها جایگزین بازبین انسانی مستقل نیست. گردش‌کارها با هویت `github-actions[bot]` اجرا می‌شوند و Achievement را تضمین نمی‌کنند.
+
+## وضعیت مسیر نشان‌ها
+
+شمارش رویداد در این مخزن **اعطا نیست**. Achievements در public preview است و GitHub کاتالوگ کامل شرایط را منتشر نکرده. تست‌ها SHAهای squash-نشسته روی `main` را قفل می‌کنند؛ فهرست PR جایگزین اعطا نیست:
+
+| مسیر | چه پیاده شده | چه نیست |
+| --- | --- | --- |
+| Pull Shark | گزارش پیشرفت PRهای **mergeشده‌ای که همان عضو باز کرده** را می‌شمارد | PR با نویسندهٔ `cursor[bot]` برای ramincsy یا backrebital-lgtm شمرده نمی‌شود؛ close بدون merge شمرده نمی‌شود |
+| Pair Extraordinaire | قالب trailer محلی (`npm run coauthor` در `CI` بدون توکن) و از API (`Validate co-authors` با کد شاخهٔ پیش‌فرض)؛ پس از merge، commit **نشسته روی شاخهٔ پیش‌فرض** شمرده می‌شود. فقط co-author **noreply** به شکل `ID+login` | squash ممکن است نویسنده را به ادغام‌کننده عوض کند و trailer خودِ نویسنده را حذف کند؛ ایمیل شخصی روی همان commit دوباره شمرده نمی‌شود؛ اتصال Settings → Emails اینجا تأیید نمی‌شود |
+| بررسی متقابل | PR غیرپیش‌نویس عضو، یا PR عامل با trailer noreply خوش‌فرم عضو، از عضوی که هنوز reviewer نیست بررسی می‌خواهد | approve/merge نمی‌کند؛ دو reviewer مستقل نمی‌سازد |
+| Quickdraw / YOLO | فقط در راهنما آمده | بستن فوری یا merge بدون بررسی برای نشان؛ گردش‌کارها این کار را نمی‌کنند |
+| Galaxy Brain | قالب Discussions Q&A برای پرسش واقعی | پرسش و پاسخ نمایشی ساخته نمی‌شود |
+
+جزئیات و محدودیت شواهد: [نشان‌ها](docs/achievements.fa.md)، [گردش‌کارها](docs/workflows.fa.md)، [مثال Pair Extraordinaire](docs/examples/pair-extraordinaire.fa.md).
+
+## اجرای محلی
+
+به Node.js نسخهٔ ۲۰ یا بالاتر نیاز دارید (CI روی ۲۲ اجرا می‌شود). نصب وابستگی لازم نیست.
+
+```sh
+npm test
+npm run check
+npm run coauthor
+```
+
+`npm run coauthor` قالب trailerهای `Co-authored-by` را از `git log` همین شاخه می‌خواند و به توکن GitHub نیاز ندارد. commit بدون trailer برای کار تکی مجاز است.
+
+## همکاری ساعتی
+
+گردش‌کار `Hourly maintenance` با تغییر Issue یا وضعیت PR، ثبت یا کنارگذاشتن review در همین مخزن، برنامهٔ دقیقهٔ ۱۷ هر ساعت به وقت UTC، و اجرای دستی در تب Actions فعال می‌شود:
+
+1. سلامت فایل‌های راهنما و تست‌های برنامه را بررسی می‌کند.
+2. Issueها و PRهای باز همین مخزن را با صفحه‌بندی کامل می‌خواند؛ دادهٔ ناقص را موفق گزارش نمی‌کند.
+3. کارهای `ready-for-work` بدون مسئول را متوازن واگذار می‌کند؛ اگر `blocked by` بومی هنوز باز باشد یا برچسب `blocked` باشد واگذار نمی‌کند و بررسی PRها را از عضو دیگر درخواست می‌کند.
+4. در صورت وجود کار، یک Issue هماهنگی ایجاد یا به‌روزرسانی می‌کند.
+5. اگر وضعیت تغییری نکرده باشد، چیزی منتشر نمی‌کند.
+
+این گردش‌کار یک هماهنگ‌کنندهٔ قطعی است؛ عامل هوش مصنوعی برای تولید کد یا مکالمه نیست. کارهای آن با هویت `github-actions[bot]` انجام می‌شوند و دریافت Achievement را تضمین نمی‌کند.
+
+علاوه بر Actions، یک وظیفهٔ ساعتی در Codex مالک پروژه تنظیم شده است تا کارهای واقعی را پیاده‌سازی، تست و بررسی کند. این وظیفه به روشن‌بودن کامپیوتر، اجرای برنامه، سهمیهٔ در دسترس و نشست معتبر حساب‌ها وابسته است و با clone این مخزن منتقل نمی‌شود. نوشته‌های آن از طرف حساب‌ها با ذکر خودکاربودن منتشر می‌شوند؛ استفاده از دو حساب یک مالک به معنی دو بازبینی‌کنندهٔ انسانی مستقل نیست.
+
+زمان اجرای GitHub Actions ممکن است تأخیر داشته باشد. زمان‌بندی باید روی شاخهٔ پیش‌فرض باشد و در مخزن عمومی پس از ۶۰ روز بی‌فعالیتی ممکن است غیرفعال شود.
+
+گردش‌کارهای نقش‌محور (اعتبارسنجی `Co-authored-by`، درخواست بررسی متقابل برای PR عضو یا PR عاملِ دارای trailer عضو، گزارش شمارش PRهای mergeشده و commitهای pair **نشسته روی شاخهٔ پیش‌فرض**) در [راهنمای گردش‌کار](docs/workflows.fa.md) آمده‌اند. آن‌ها PR خالی یا فعالیت ساختگی تولید نمی‌کنند و اگر `GH_TOKEN` داشته باشند فقط کد شاخهٔ پیش‌فرض را اجرا می‌کنند.
+
+## شروع کار
+
+- [راهنمای مشارکت](CONTRIBUTING.md)
+- [مثال عملی branch، PR، close و merge](docs/examples/branch-pr.fa.md)
+- [انتساب commit، co-author و Discussions](docs/examples/attribution.fa.md)
+- [مثال عملی Pair Extraordinaire و noreply تأییدشده](docs/examples/pair-extraordinaire.fa.md)
+- [نشان‌ها و محدودیت شواهد](docs/achievements.fa.md)
+- [English achievement matrix](docs/achievements.md)
+- [گردش‌کارهای دو حساب](docs/workflows.fa.md)
+- [تنظیم همکاری و دسترسی](docs/setup.fa.md)
+- [صف کار، بررسی، اولویت‌ها و اجرای آزمایشی](docs/collaboration.fa.md)
+
+## منابع رسمی
+
+- [Achievements در پروفایل](https://docs.github.com/en/account-and-profile/reference/profile-reference)
+- [نویسندگی مشترک](https://docs.github.com/en/pull-requests/how-tos/commit-changes/creating-a-commit-with-multiple-authors)
+- [زمان‌بندی Actions](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows)
+- [هویت GITHUB_TOKEN](https://docs.github.com/en/actions/concepts/security/github_token)
