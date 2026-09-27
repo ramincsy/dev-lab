@@ -1,0 +1,42 @@
+name: Contrib daily (Track B)
+
+on:
+  schedule:
+    # ~10:42 Asia/Tehran (UTC+3:30)
+    - cron: "12 7 * * *"
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Target commits for today (Tehran day)"
+        required: false
+        default: "900"
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: contrib-daily
+  cancel-in-progress: false
+
+jobs:
+  contrib:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Track B (contrib floor)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TARGET: ${{ github.event.inputs.target || '900' }}
+          BATCH_SIZE: "250"
+          GIT_AUTHOR_NAME: ramincsy
+          GIT_AUTHOR_EMAIL: 34828058+ramincsy@users.noreply.github.com
+          GIT_COMMITTER_NAME: ramincsy
+          GIT_COMMITTER_EMAIL: 34828058+ramincsy@users.noreply.github.com
+        run: bash scripts/contrib-daily.sh
