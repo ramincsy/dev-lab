@@ -1,11 +1,12 @@
 # dev-lab · opskit
 
-Small, tested Python utilities for **network ops and ANPR pipelines** — CIDR helpers, inventory normalization, and plate string cleanup. This repository is a real engineering lab (code + tests + CI). It is **not** a contribution-farming or GitHub Achievements toolkit.
+Small, tested Python utilities for **network ops and ANPR pipelines** — CIDR helpers, inventory normalization, and plate string cleanup.
+
+This repository is a real engineering lab (code + tests + CI). It is **not** a contribution-farming or GitHub Achievements toolkit.
 
 <div dir="rtl" lang="fa" align="right">
 
 ### فارسی
-
 ابزارک‌های کوچک برای شبکه و ANPR: خلاصه CIDR، نرمال‌سازی موجودی تجهیزات، و یکدست‌سازی پلاک. ریپو برای کار واقعی با تست و CI است — نه ساخت فعالیت مصنوعی.
 
 </div>
