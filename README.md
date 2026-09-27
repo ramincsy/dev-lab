@@ -1,44 +1,32 @@
-# dev-lab · opskit
+# Agent playbook — ramincsy/dev-lab
 
-Small, tested Python utilities for **network ops and ANPR pipelines** — CIDR helpers, inventory normalization, and plate string cleanup.
+Canonical copy of [issue #28](https://github.com/ramincsy/dev-lab/issues/28).
 
-This repository is a real engineering lab (code + tests + CI). It is **not** a contribution-farming or GitHub Achievements toolkit.
+User: **رامین (Ramin)** / GitHub **`ramincsy`**. Prefer reports in **Persian**.
 
-<div dir="rtl" lang="fa" align="right">
+**Two separate tracks — never mix them.**
 
-### فارسی
-ابزارک‌های کوچک برای شبکه و ANPR: خلاصه CIDR، نرمال‌سازی موجودی تجهیزات، و یکدست‌سازی پلاک. ریپو برای کار واقعی با تست و CI است — نه ساخت فعالیت مصنوعی.
+| Track | Workflow | Cron (UTC) | ≈ Asia/Tehran |
+|-------|----------|------------|---------------|
+| A Pair | `.github/workflows/pair-daily.yml` | `54 5 * * *` | 09:24 |
+| B Contrib | `.github/workflows/contrib-daily.yml` | `12 7 * * *` | 10:42 |
 
-</div>
+Runs with the built-in `GITHUB_TOKEN` (no extra secret). Commits set author to `ramincsy <34828058+ramincsy@users.noreply.github.com>`.
 
-## Install (editable)
+## Track A — Pair Extraordinaire
 
-```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -e ".[dev]"
-```
+- 10 PRs/day under `docs/pair-log/` on branches `pair/YYYY-MM-DD-NN`
+- Exact trailer: `Co-authored-by: backrebital-lgtm <329678572+backrebital-lgtm@users.noreply.github.com>`
+- Merge with **merge commit** only
+- Stop when Pair Extraordinaire reaches ×4
 
-## CLI
+## Track B — Contribution floor (≥900/day)
 
-```bash
-python -m opskit cidr-summary 10.20.0.0/23
-python -m opskit cidr-overlap 10.0.0.0/16 10.0.5.0/24
-echo '{"hostname":"edge-fw1","ip":"10.9.1.1","role":"firewall","site":"ank"}' | python -m opskit inventory-normalize
-python -m opskit plate-normalize "۱۲ ب-۳۴۵ ۶۷"
-```
+- Branches `contrib/YYYY-MM-DD-batch-N`, files under `docs/contrib-log/`
+- Author email must be `34828058+ramincsy@users.noreply.github.com`
+- Soft cap ~1000 new commits/day; merge commit only
+- Do not touch `docs/pair-log/`
 
-## Develop
+## Track C — Existing health Actions
 
-```bash
-ruff check src tests
-pytest -q
-```
-
-## CI
-
-GitHub Actions runs **ruff + pytest** on every push/PR to `main`. A weekly health workflow re-runs the same checks (no filler commits).
-
-## Roadmap (showcase automation)
-
-Sibling catalog repos can adopt a shared link-check workflow; see `docs/showcase-automation.md`.
+Keep `CI`, `Daily`, and `Weekly health` enabled.
