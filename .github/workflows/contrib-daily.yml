@@ -2,12 +2,16 @@ name: Contrib daily (Track B)
 
 on:
   schedule:
-    # ~10:42 Asia/Tehran (UTC+3:30)
-    - cron: "12 7 * * *"
+    # Cumulative Tehran-day floor, split so a missed window does not drop the
+    # whole day. Totals stay 900 (300, then 600, then 900) — not 900×3.
+    # 05:37 UTC ≈ 09:07 Asia/Tehran, 11:37 ≈ 15:07, 17:37 ≈ 21:07.
+    - cron: "37 5 * * *"
+    - cron: "37 11 * * *"
+    - cron: "37 17 * * *"
   workflow_dispatch:
     inputs:
       target:
-        description: "Target commits for today (Tehran day)"
+        description: "Cumulative target commits for today (Tehran day)"
         required: false
         default: "900"
 
@@ -33,7 +37,9 @@ jobs:
       - name: Run Track B (contrib floor)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TARGET: ${{ github.event.inputs.target || '900' }}
+          EVENT_NAME: ${{ github.event_name }}
+          CRON_SCHEDULE: ${{ github.event.schedule }}
+          INPUT_TARGET: ${{ github.event.inputs.target }}
           BATCH_SIZE: "250"
           GIT_AUTHOR_NAME: ramincsy
           GIT_AUTHOR_EMAIL: 34828058+ramincsy@users.noreply.github.com

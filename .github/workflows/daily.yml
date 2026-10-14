@@ -2,8 +2,8 @@ name: Daily
 
 on:
   schedule:
-    # Every day at 07:00 UTC (~10:30 Asia/Tehran, UTC+3:30)
-    - cron: "0 7 * * *"
+    # 08:19 UTC. Off minute 00, and outside the 05/11/17 commit windows.
+    - cron: "19 8 * * *"
   workflow_dispatch:
 
 jobs:
