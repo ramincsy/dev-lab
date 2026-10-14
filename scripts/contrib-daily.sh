@@ -20,6 +20,9 @@ BATCH_SIZE="${BATCH_SIZE:-250}"
 AUTHOR_EMAIL="34828058+ramincsy@users.noreply.github.com"
 LOG="docs/contrib-log/${TODAY}.md"
 
+# shellcheck source=scripts/wait-pr-ci.sh
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/wait-pr-ci.sh"
+
 git config user.name "${GIT_AUTHOR_NAME}"
 git config user.email "${GIT_AUTHOR_EMAIL}"
 
@@ -95,6 +98,7 @@ Related: #${issue_num}
 Merge with **merge commit** only.")"
   pr_num="$(echo "$pr_url" | grep -oE '[0-9]+$')"
   gh pr review "$pr_num" --repo "$REPO" --comment --body "Track B batch ${batch} looks good to merge (merge commit)."
+  wait_for_pr_ci "$pr_num"
   gh pr merge "$pr_num" --repo "$REPO" --merge --delete-branch
   gh issue comment "$issue_num" --repo "$REPO" --body "Merged batch ${batch}: ${pr_url} (${this} commits)."
 

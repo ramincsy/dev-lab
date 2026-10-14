@@ -36,7 +36,7 @@ jobs:
 
       - name: Run Track B (contrib floor)
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.DEVLAB_PAT || secrets.GITHUB_TOKEN }}
           EVENT_NAME: ${{ github.event_name }}
           CRON_SCHEDULE: ${{ github.event.schedule }}
           INPUT_TARGET: ${{ github.event.inputs.target }}
