@@ -6,6 +6,9 @@ TODAY="$(TZ=Asia/Tehran date +%F)"
 CO_TRAILER="Co-authored-by: backrebital-lgtm <329678572+backrebital-lgtm@users.noreply.github.com>"
 SUMMARY=()
 
+# shellcheck source=scripts/wait-pr-ci.sh
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/wait-pr-ci.sh"
+
 git config user.name "${GIT_AUTHOR_NAME}"
 git config user.email "${GIT_AUTHOR_EMAIL}"
 
@@ -34,8 +37,9 @@ for NN in 01 02 03 04 05 06 07 08 09 10; do
     echo "$msg"
     SUMMARY+=("- $msg")
     if gh pr view "$existing_pr" --repo "$REPO" --json state --jq .state | grep -qi open; then
-      gh pr merge "$existing_pr" --repo "$REPO" --merge --delete-branch || true
-      SUMMARY+=("  - attempted merge of #$existing_pr")
+      wait_for_pr_ci "$existing_pr"
+      gh pr merge "$existing_pr" --repo "$REPO" --merge --delete-branch
+      SUMMARY+=("  - merged #$existing_pr after CI")
     fi
     continue
   fi
@@ -63,6 +67,7 @@ Merge with **Create a merge commit** only (this workflow uses \`gh pr merge --me
 ${CO_TRAILER}")"
 
   pr_num="$(echo "$pr_url" | grep -oE '[0-9]+$')"
+  wait_for_pr_ci "$pr_num"
   gh pr merge "$pr_num" --repo "$REPO" --merge --delete-branch
   msg="merged slot ${NN}: PR #${pr_num} $pr_url"
   echo "$msg"
