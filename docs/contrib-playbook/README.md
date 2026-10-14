@@ -8,8 +8,11 @@ User: **رامین (Ramin)** / GitHub **`ramincsy`**. Prefer reports in **Persia
 
 | Track | Workflow | Cron (UTC) | ≈ Asia/Tehran |
 |-------|----------|------------|---------------|
-| A Pair | `.github/workflows/pair-daily.yml` | `54 5 * * *` | 09:24 |
-| B Contrib | `.github/workflows/contrib-daily.yml` | `12 7 * * *` | 10:42 |
+| A Pair | `.github/workflows/pair-daily.yml` | `7 5`, `7 11`, `7 17` | 08:37, 14:37, 20:37 |
+| B Contrib | `.github/workflows/contrib-daily.yml` | `37 5` (floor 300), `37 11` (600), `37 17` (900) | 09:07, 15:07, 21:07 |
+| Floor check | `.github/workflows/daily-floor.yml` | `11 19` | 22:41 |
+
+Pair and contrib are idempotent. A missed window is retried at the next one; the contrib slices are cumulative, so the Tehran-day total stays 900 rather than 900×3. `workflow_dispatch` on either workflow still accepts an explicit target (contrib default 900). The floor check dispatches both workflows and fails the run when authored commits for the Tehran day are under 450.
 
 Runs with the built-in `GITHUB_TOKEN` (no extra secret). Commits set author to `ramincsy <34828058+ramincsy@users.noreply.github.com>`.
 
@@ -29,4 +32,4 @@ Runs with the built-in `GITHUB_TOKEN` (no extra secret). Commits set author to `
 
 ## Track C — Existing health Actions
 
-Keep `CI`, `Daily`, and `Weekly health` enabled.
+Keep `CI`, `Daily` (`19 8 * * *`), and `Weekly health` enabled.

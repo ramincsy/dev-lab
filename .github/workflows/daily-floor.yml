@@ -1,0 +1,29 @@
+name: Daily floor
+
+on:
+  schedule:
+    # 19:11 UTC ≈ 22:41 Asia/Tehran, after the 17:37 slice and before Tehran
+    # midnight (20:30 UTC) so a catch-up still lands on the same Tehran day.
+    - cron: "11 19 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  floor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check Tehran-day commit floor
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AUTHOR_EMAIL: 34828058+ramincsy@users.noreply.github.com
+          # Half of the 900 Track B floor. A single missed slice (~300) still
+          # passes; a dropped morning+midday does not.
+          MIN_OK: "450"
+        run: bash scripts/daily-floor-check.sh

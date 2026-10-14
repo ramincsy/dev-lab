@@ -4,6 +4,18 @@ set -euo pipefail
 REPO="${GITHUB_REPOSITORY:?}"
 TODAY="$(TZ=Asia/Tehran date +%F)"
 TARGET="${TARGET:-900}"
+# Scheduled runs pass CRON_SCHEDULE. Each slice is a cumulative floor so the
+# day still ends at 900 if every window fires, and a later window fills gaps
+# when an earlier one was skipped. workflow_dispatch keeps INPUT_TARGET.
+if [ "${EVENT_NAME:-}" = "workflow_dispatch" ]; then
+  TARGET="${INPUT_TARGET:-$TARGET}"
+elif [ -n "${CRON_SCHEDULE:-}" ]; then
+  case "${CRON_SCHEDULE}" in
+    "37 5 * * *") TARGET=300 ;;
+    "37 11 * * *") TARGET=600 ;;
+    "37 17 * * *") TARGET=900 ;;
+  esac
+fi
 BATCH_SIZE="${BATCH_SIZE:-250}"
 AUTHOR_EMAIL="34828058+ramincsy@users.noreply.github.com"
 LOG="docs/contrib-log/${TODAY}.md"

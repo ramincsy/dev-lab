@@ -2,8 +2,11 @@ name: Pair daily (Track A)
 
 on:
   schedule:
-    # ~09:24 Asia/Tehran (UTC+3:30)
-    - cron: "54 5 * * *"
+    # Idempotent: later windows skip slots already on main. A missed 05:07
+    # run is retried at 11:07 and 17:07 UTC without creating extra PRs.
+    - cron: "7 5 * * *"
+    - cron: "7 11 * * *"
+    - cron: "7 17 * * *"
   workflow_dispatch:
 
 permissions:

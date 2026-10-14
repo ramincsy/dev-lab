@@ -5,6 +5,19 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+    # Track A/B PRs are opened by github-actions[bot] and only touch these
+    # logs. Since 2026-06-11 GitHub refuses to start pull_request workflows
+    # on bot-authored PRs until a person approves them, so those runs end in
+    # ~2s with zero jobs (action_required, or failure if the branch was
+    # already deleted). Ignoring the log paths means those PRs never queue CI.
+    paths-ignore:
+      - "docs/pair-log/**"
+      - "docs/contrib-log/**"
+
+# Read-only token. Elevated workflow permissions are evaluated before jobs
+# start and are another way for a bot PR to land on action_required.
+permissions:
+  contents: read
 
 jobs:
   test:
