@@ -22,6 +22,8 @@ LOG="docs/contrib-log/${TODAY}.md"
 
 # shellcheck source=scripts/wait-pr-ci.sh
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/wait-pr-ci.sh"
+# shellcheck source=scripts/gh-fallback.sh
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/gh-fallback.sh"
 
 git config user.name "${GIT_AUTHOR_NAME}"
 git config user.email "${GIT_AUTHOR_EMAIL}"
@@ -82,8 +84,8 @@ while [ "$made" -lt "$remaining" ]; do
     printf '# Contrib log — %s\n\n' "$TODAY" > "$LOG"
   fi
 
-  start=$(( made + 1 ))
-  end=$(( made + this ))
+  start=$(( already + made + 1 ))
+  end=$(( already + made + this ))
   for i in $(seq "$start" "$end"); do
     echo "entry-$(printf '%04d' "$i") $(date -u +%Y-%m-%dT%H:%M:%SZ) batch-${batch}" >> "$LOG"
     git add "$LOG"
@@ -100,7 +102,7 @@ Merge with **merge commit** only.")"
   gh pr review "$pr_num" --repo "$REPO" --comment --body "Track B batch ${batch} looks good to merge (merge commit)."
   wait_for_pr_ci "$pr_num"
   gh pr merge "$pr_num" --repo "$REPO" --merge --delete-branch
-  gh issue comment "$issue_num" --repo "$REPO" --body "Merged batch ${batch}: ${pr_url} (${this} commits)."
+  post_issue_comment "$issue_num" "Merged batch ${batch}: ${pr_url} (${this} commits)."
 
   echo "merged batch $batch PR #$pr_num ($this commits)"
   echo "- batch ${batch}: PR #${pr_num} (${this} commits) ${pr_url}" >> "$GITHUB_STEP_SUMMARY"
@@ -110,5 +112,6 @@ Merge with **merge commit** only.")"
   batch=$(( batch + 1 ))
 done
 
-gh issue close "$issue_num" --repo "$REPO" --comment "Track B batches complete for ${TODAY} (requested remaining ${remaining})." || true
+post_issue_comment "$issue_num" "Track B batches complete for ${TODAY} (requested remaining ${remaining})."
+gh issue close "$issue_num" --repo "$REPO" || true
 echo "Track B done. created≈$made commits."

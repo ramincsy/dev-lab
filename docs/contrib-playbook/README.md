@@ -14,7 +14,7 @@ User: **رامین (Ramin)** / GitHub **`ramincsy`**. Prefer reports in **Persia
 
 Pair and contrib are idempotent. A missed window is retried at the next one; the contrib slices are cumulative, so the Tehran-day total stays 900 rather than 900×3. `workflow_dispatch` on either workflow still accepts an explicit target (contrib default 900). The floor check dispatches both workflows and fails the run when authored commits for the Tehran day are under 450.
 
-PR create/merge (Track A and B) and the floor-check dispatch use `secrets.DEVLAB_PAT` when that secret is non-empty, otherwise `GITHUB_TOKEN`. Git author and committer stay `ramincsy <34828058+ramincsy@users.noreply.github.com>`. CI runs on these PRs (no docs path filter); merge waits until that check passes so the head ref is still there for checkout.
+PR create/merge (Track A and B) and the floor-check dispatch try `secrets.DEVLAB_PAT` when that secret is non-empty, otherwise `GITHUB_TOKEN`. Issue comments and workflow dispatch retry with `GITHUB_TOKEN` when the fine-grained PAT returns 403. Git author and committer stay `ramincsy <34828058+ramincsy@users.noreply.github.com>`. CI runs on these PRs; merge waits until that check passes. A floor run that starts after Tehran midnight (before 12:00) audits the previous day and does not dispatch, so the catch-up is not authored onto the new day.
 
 ## Track A — Pair Extraordinaire
 
