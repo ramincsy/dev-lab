@@ -2,28 +2,35 @@
 set -euo pipefail
 
 REPO="${GITHUB_REPOSITORY:?}"
-TODAY="$(TZ=Asia/Tehran date +%F)"
 TARGET="${TARGET:-900}"
 # Scheduled runs pass CRON_SCHEDULE. Each slice is a cumulative floor so the
 # day still ends at 900 if every window fires, and a later window fills gaps
-# when an earlier one was skipped. workflow_dispatch keeps INPUT_TARGET.
+# when an earlier one was skipped. The 14:37 UTC slice repeats 900. An unknown
+# schedule also stays at 900. workflow_dispatch keeps INPUT_TARGET.
 if [ "${EVENT_NAME:-}" = "workflow_dispatch" ]; then
   TARGET="${INPUT_TARGET:-$TARGET}"
 elif [ -n "${CRON_SCHEDULE:-}" ]; then
   case "${CRON_SCHEDULE}" in
-    "37 5 * * *") TARGET=300 ;;
-    "37 11 * * *") TARGET=600 ;;
-    "37 17 * * *") TARGET=900 ;;
+    "37 1 * * *") TARGET=300 ;;
+    "37 6 * * *") TARGET=600 ;;
+    "37 11 * * *") TARGET=900 ;;
+    "37 14 * * *") TARGET=900 ;;
   esac
 fi
 BATCH_SIZE="${BATCH_SIZE:-250}"
 AUTHOR_EMAIL="34828058+ramincsy@users.noreply.github.com"
-LOG="docs/contrib-log/${TODAY}.md"
 
 # shellcheck source=scripts/wait-pr-ci.sh
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/wait-pr-ci.sh"
 # shellcheck source=scripts/gh-fallback.sh
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/gh-fallback.sh"
+# shellcheck source=scripts/tehran-slot.sh
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/tehran-slot.sh"
+# Scheduled runs use the cron slot's Tehran day, not wall-clock now, so a
+# start after midnight still tops up the day the slot was meant for.
+resolve_tehran_slot
+TODAY="$TEHRAN_DAY"
+LOG="docs/contrib-log/${TODAY}.md"
 
 git config user.name "${GIT_AUTHOR_NAME}"
 git config user.email "${GIT_AUTHOR_EMAIL}"
@@ -47,10 +54,12 @@ remaining=$(( TARGET - already ))
 if [ "$remaining" -lt 0 ]; then remaining=0; fi
 
 echo "Track B date=$TODAY already=$already target=$TARGET remaining=$remaining"
-echo "## Contrib daily $TODAY" >> "$GITHUB_STEP_SUMMARY"
-echo "- already: $already" >> "$GITHUB_STEP_SUMMARY"
-echo "- target: $TARGET" >> "$GITHUB_STEP_SUMMARY"
-echo "- remaining: $remaining" >> "$GITHUB_STEP_SUMMARY"
+{
+  echo "## Contrib daily $TODAY"
+  echo "- already: $already"
+  echo "- target: $TARGET"
+  echo "- remaining: $remaining"
+} >> "$GITHUB_STEP_SUMMARY"
 
 if [ "$remaining" -eq 0 ]; then
   echo "Floor met; nothing to do."
@@ -87,9 +96,12 @@ while [ "$made" -lt "$remaining" ]; do
   start=$(( already + made + 1 ))
   end=$(( already + made + this ))
   for i in $(seq "$start" "$end"); do
-    echo "entry-$(printf '%04d' "$i") $(date -u +%Y-%m-%dT%H:%M:%SZ) batch-${batch}" >> "$LOG"
+    # A few seconds after the slot, still inside the same Tehran day.
+    stamp="$(author_date_at "$i")"
+    echo "entry-$(printf '%04d' "$i") ${stamp} batch-${batch}" >> "$LOG"
     git add "$LOG"
-    git commit -m "chore(contrib): ${TODAY} entry $(printf '%04d' "$i")"
+    GIT_AUTHOR_DATE="$stamp" GIT_COMMITTER_DATE="$stamp" \
+      git commit -m "chore(contrib): ${TODAY} entry $(printf '%04d' "$i")"
   done
 
   git push -u origin "HEAD:refs/heads/${BRANCH}" --force-with-lease

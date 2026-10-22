@@ -2,12 +2,17 @@
 set -euo pipefail
 
 REPO="${GITHUB_REPOSITORY:?}"
-TODAY="$(TZ=Asia/Tehran date +%F)"
 CO_TRAILER="Co-authored-by: backrebital-lgtm <329678572+backrebital-lgtm@users.noreply.github.com>"
 SUMMARY=()
 
 # shellcheck source=scripts/wait-pr-ci.sh
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/wait-pr-ci.sh"
+# shellcheck source=scripts/tehran-slot.sh
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/tehran-slot.sh"
+# Same slot-day rule as Track B. A late evening run fills the intended
+# Tehran day; files already on main keep the day at 10 PRs.
+resolve_tehran_slot
+TODAY="$TEHRAN_DAY"
 
 git config user.name "${GIT_AUTHOR_NAME}"
 git config user.email "${GIT_AUTHOR_EMAIL}"
@@ -46,6 +51,7 @@ for NN in 01 02 03 04 05 06 07 08 09 10; do
 
   git checkout -B "$BRANCH" origin/main
   mkdir -p docs/pair-log
+  stamp="$(author_date_at "$((10#$NN))")"
   cat > "$FILE" << MD
 # Pair log — ${TODAY} slot ${NN}
 
@@ -53,11 +59,12 @@ Short pairing note for \`opskit\` docs/CI hygiene.
 
 - Verified slot isolation under \`docs/pair-log/\` only.
 - Kept the change narrowly scoped for a clean merge-commit history.
-- Timestamp (Tehran): $(TZ=Asia/Tehran date -Iseconds)
+- Timestamp (Tehran): ${stamp}
 MD
 
   git add "$FILE"
-  git commit -m "${TITLE}" -m "Track A pair slot for ${TODAY}." -m "${CO_TRAILER}"
+  GIT_AUTHOR_DATE="$stamp" GIT_COMMITTER_DATE="$stamp" \
+    git commit -m "${TITLE}" -m "Track A pair slot for ${TODAY}." -m "${CO_TRAILER}"
   git push -u origin "HEAD:refs/heads/${BRANCH}" --force-with-lease
 
   pr_url="$(gh pr create --repo "$REPO" --base main --head "$BRANCH" --title "$TITLE" --body "Track A (Pair Extraordinaire) slot ${NN} for ${TODAY}.
