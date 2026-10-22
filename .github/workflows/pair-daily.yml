@@ -2,11 +2,14 @@ name: Pair daily (Track A)
 
 on:
   schedule:
-    # Idempotent: later windows skip slots already on main. A missed 05:07
-    # run is retried at 11:07 and 17:07 UTC without creating extra PRs.
-    - cron: "7 5 * * *"
+    # 10 PRs/day. Later windows skip slots already on main, including the
+    # 14:07 UTC retry, so the day stays at 10. A run that starts after Tehran
+    # midnight is pinned to the slot's Tehran day.
+    # 01:07 UTC ≈ 04:37 Asia/Tehran, 06:07 ≈ 09:37, 11:07 ≈ 14:37, 14:07 ≈ 17:37.
+    - cron: "7 1 * * *"
+    - cron: "7 6 * * *"
     - cron: "7 11 * * *"
-    - cron: "7 17 * * *"
+    - cron: "7 14 * * *"
   workflow_dispatch:
 
 permissions:
@@ -31,6 +34,8 @@ jobs:
       - name: Run Track A (10 pair PRs)
         env:
           GH_TOKEN: ${{ secrets.DEVLAB_PAT || secrets.GITHUB_TOKEN }}
+          EVENT_NAME: ${{ github.event_name }}
+          CRON_SCHEDULE: ${{ github.event.schedule }}
           GIT_AUTHOR_NAME: ramincsy
           GIT_AUTHOR_EMAIL: 34828058+ramincsy@users.noreply.github.com
           GIT_COMMITTER_NAME: ramincsy

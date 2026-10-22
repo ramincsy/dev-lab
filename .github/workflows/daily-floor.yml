@@ -2,9 +2,10 @@ name: Daily floor
 
 on:
   schedule:
-    # 19:11 UTC ≈ 22:41 Asia/Tehran, after the 17:37 slice and before Tehran
-    # midnight (20:30 UTC) so a catch-up still lands on the same Tehran day.
-    - cron: "11 19 * * *"
+    # 15:31 UTC ≈ 19:01 Asia/Tehran, after the 14:37 catch-up and before Tehran
+    # midnight (20:30 UTC), so an on-time run can still top up that day.
+    # A start after midnight audits the previous day and does not dispatch.
+    - cron: "31 15 * * *"
   workflow_dispatch:
 
 permissions:

@@ -2,12 +2,16 @@ name: Contrib daily (Track B)
 
 on:
   schedule:
-    # Cumulative Tehran-day floor, split so a missed window does not drop the
-    # whole day. Totals stay 900 (300, then 600, then 900) — not 900×3.
-    # 05:37 UTC ≈ 09:07 Asia/Tehran, 11:37 ≈ 15:07, 17:37 ≈ 21:07.
-    - cron: "37 5 * * *"
+    # Cumulative Tehran-day floor: 300, then 600, then 900, then the same 900
+    # again. Not 900×4. Slots are early enough that a 5–6h GitHub delay still
+    # belongs to that Tehran day (midnight is 20:30 UTC). The script dates
+    # commits at the slot, so a catch-up that slips past midnight still counts
+    # on the intended day.
+    # 01:37 UTC ≈ 05:07 Asia/Tehran, 06:37 ≈ 10:07, 11:37 ≈ 15:07, 14:37 ≈ 18:07.
+    - cron: "37 1 * * *"
+    - cron: "37 6 * * *"
     - cron: "37 11 * * *"
-    - cron: "37 17 * * *"
+    - cron: "37 14 * * *"
   workflow_dispatch:
     inputs:
       target:
